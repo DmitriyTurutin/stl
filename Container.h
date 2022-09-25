@@ -65,6 +65,19 @@ public:
 
 	}
 
+	
+
+	void operator=(const List& other)
+	{
+		node_t* tmp = other.head;
+
+		clear();
+		while (tmp != nullptr)
+		{
+			pushBack(tmp->value);
+			tmp = tmp->next;
+		}
+	}
 
 	//	~List() { clear(); }
 
@@ -132,8 +145,8 @@ public:
 
 	Iterator end() const
 	{
-		if (tail == nullptr)
-			return Iterator(*this, nullptr);
+		if (head == nullptr)
+			throw Exception("List is empty!");
 
 		return Iterator(*this, tail->next);
 	}
