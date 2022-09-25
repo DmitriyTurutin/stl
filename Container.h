@@ -54,6 +54,16 @@ public:
 			pushBack(initial_value);
 	}
 
+	template <typename IteratorType>
+	List(IteratorType beg, IteratorType end)
+	{
+		while (beg != end)
+		{
+			pushBack(*beg);
+			++beg;
+		}
+
+	}
 
 
 	//	~List() { clear(); }
@@ -122,8 +132,8 @@ public:
 
 	Iterator end() const
 	{
-		if (head == nullptr)
-			throw Exception("List is empty!");
+		if (tail == nullptr)
+			return Iterator(*this, nullptr);
 
 		return Iterator(*this, tail->next);
 	}

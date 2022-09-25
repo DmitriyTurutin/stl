@@ -11,23 +11,37 @@ public:
 	using Nodeptr = List<DataType>::Node*;
 	using pointer_type = value_type*;
 	using reference_type = value_type&;
+	using listpointer_type = List<DataType>*;
 
 	template<typename DataType> friend class List;
 public:
 	ListIterator() noexcept : m_Ptr(nullptr), lst() {};
 
-	ListIterator(const List<DataType>& lst, Nodeptr ptr)
+	ListIterator(List<DataType>& lst, Nodeptr ptr)
+		: lst(&lst), m_Ptr(ptr)
+	{}
+
+	ListIterator(List<DataType>& lst, int n)
 	{
-		this->lst = lst;
-		m_Ptr = ptr;
+		m_Ptr = lst.head;
+		lst = &lst;
+
+		for (int i = 0; i < n; i++)
+		{
+			m_Ptr = m_Ptr->next;
+		}
 	}
 
 	ListIterator(const ListIterator& iter)
-	{
-		this->lst = iter.lst;
-		this->m_Ptr = iter.m_Ptr;
-	}
+		: lst(&iter.lst),
+		  m_Ptr(iter.m_Ptr)
+	{}
 
+	~ListIterator()
+	{
+		lst = nullptr;
+		m_Ptr = nullptr;
+	}
 	ListIterator& operator++()
 	{
 		m_Ptr = m_Ptr->next;
@@ -66,5 +80,5 @@ public:
 
 private:
 	Nodeptr m_Ptr;
-	List<DataType> lst;
+	listpointer_type lst;
 };
