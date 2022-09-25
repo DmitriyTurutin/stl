@@ -39,7 +39,7 @@ public:
 
 	ListIterator(const ListIterator& iter)
 		: lst(iter.lst),
-		  m_Ptr(iter.m_Ptr)
+		m_Ptr(iter.m_Ptr)
 	{}
 
 	ListIterator& operator++()
@@ -76,6 +76,28 @@ public:
 	bool operator==(const ListIterator& other) const
 	{
 		return m_Ptr == other.m_Ptr;
+	}
+
+	ListIterator& operator=(const ListIterator other) noexcept
+	{
+		lst = other.list;
+		m_Ptr = other.m_Ptr;
+		return *this;
+	}
+
+	reference_type operator*() const
+	{
+		return m_Ptr->value;
+	}
+
+	pointer_type operator->()
+	{
+		return &m_Ptr->value;
+	}
+
+	explicit operator value_type*() const
+	{
+		return &m_Ptr->value;
 	}
 
 private:

@@ -16,10 +16,21 @@ concept IteratorConcept = requires(Iterator i, Iterator j)
 	{ *i } -> std::same_as<std::iter_reference_t<Iterator>>;
 };
 
+template<typename Iterator, typename Predicate>
+concept PredicateConcept = requires(Iterator i, Predicate pred)
+{
+	{ pred(*i) } -> std::convertible_to<bool>;
+};
+
+template<typename Iterator, typename Function>
+concept LambdaConcept = requires(Iterator i, Function func)
+{
+	func(*i);
+};
 
 
 template<typename InputIt, typename UnaryPredicate>
-requires IteratorConcept<InputIt>
+requires IteratorConcept<InputIt> && PredicateConcept<InputIt, UnaryPredicate>
 int count_if(InputIt begin, InputIt end, UnaryPredicate pred)
 {
 	int count = 0;
@@ -36,7 +47,7 @@ int count_if(InputIt begin, InputIt end, UnaryPredicate pred)
 }
 
 template<typename InputIt, typename UnaryFunction>
-requires IteratorConcept<InputIt>
+requires IteratorConcept<InputIt> && LambdaConcept<InputIt, UnaryFunction>
 void for_each(InputIt begin, InputIt end, UnaryFunction fun)
 {
 	while (begin != end)
@@ -47,7 +58,7 @@ void for_each(InputIt begin, InputIt end, UnaryFunction fun)
 }
 
 template<typename InputIt, typename UnaryPredicate>
-requires IteratorConcept<InputIt>
+requires IteratorConcept<InputIt> && PredicateConcept<InputIt, UnaryPredicate>
 InputIt find_if(InputIt begin, InputIt end, UnaryPredicate pred)
 {
 	while (begin != end)
@@ -60,7 +71,7 @@ InputIt find_if(InputIt begin, InputIt end, UnaryPredicate pred)
 }
 
 template<typename InputIt, typename UnaryFunction>
-requires IteratorConcept<InputIt>
+requires IteratorConcept<InputIt> && LambdaConcept<InputIt, UnaryFunction>
 InputIt min_element(InputIt begin, InputIt end, UnaryFunction func)
 {
 	auto result = begin;
@@ -75,7 +86,7 @@ InputIt min_element(InputIt begin, InputIt end, UnaryFunction func)
 }
 
 template<typename InputIt, typename UnaryFunction>
-requires IteratorConcept<InputIt>
+requires IteratorConcept<InputIt> && LambdaConcept<InputIt, UnaryFunction>
 InputIt max_element(InputIt begin, InputIt end, UnaryFunction func)
 {
 	auto result = begin;
@@ -90,14 +101,14 @@ InputIt max_element(InputIt begin, InputIt end, UnaryFunction func)
 }
 
 template<typename InputIt, typename UnaryFunction>
-requires IteratorConcept<InputIt>
+requires IteratorConcept<InputIt> && LambdaConcept<InputIt, UnaryFunction>
 void Sort(InputIt begin, InputIt end, UnaryFunction func)
 {
 		std::iter_swap(begin, min_element(begin, end, func));
 }
 
 template<typename InputIt, typename OutputIt, typename UnaryPredicate>
-requires IteratorConcept<InputIt>
+requires IteratorConcept<InputIt> && PredicateConcept<InputIt, UnaryPredicate>
 int copy_if(InputIt first, InputIt last, OutputIt d_first, UnaryPredicate pred)
 {
 	int copied = 0; 

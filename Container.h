@@ -12,6 +12,7 @@ public:
 	template<typename DataType> friend class ListIterator;
 	using ValueType = DataType;
 	using Iterator = ListIterator<DataType>;
+	using constIterator = const Iterator;
 private:
 	//template<class DataType>
 	class Node
@@ -37,6 +38,7 @@ private:
 
 public:
 	using node_t = Node;
+	 
 
 	List() : size(0), head(nullptr), tail(nullptr) {}
 
@@ -65,7 +67,20 @@ public:
 
 	}
 
+	// List(List& other) = delete;
+	/*List(List&& other)
+	{
+		this->head = other.head;
+		this->tail = other.tail;
+		this->size = other.size;
+
+		other.head = other.tail = nullptr;
+		other.size = 0;
+	}
 	
+*/
+
+	Iterator at(const int place) const { return Iterator(*this, place); }
 
 	void operator=(const List& other)
 	{
@@ -80,6 +95,29 @@ public:
 	}
 
 	//	~List() { clear(); }
+	bool empty() const { return size == 0; }
+
+	size_t getSize() const { return size; }
+
+	Iterator begin() const { return Iterator(*this, head); }
+
+	constIterator const_begin() const { return Iterator(*this, head); }
+
+	Iterator end() const
+	{
+		if (tail == nullptr)
+			return Iterator(*this, nullptr);
+
+		return Iterator(*this, tail->next);
+	}
+
+	constIterator const_end() const
+	{
+		if (tail == nullptr)
+			return Iterator(*this, nullptr);
+
+		return Iterator(*this, tail->next);
+	}
 
 	void pushBack(DataType& value)
 	{
@@ -130,25 +168,19 @@ public:
 		this->size--;
 	}
 
-	void clear()
-	{
-		while (!empty())
-			popBack();
-	}
-	bool empty() const { return size == 0; }
-	size_t getSize() const { return size; }
-
-	Iterator begin() const
-	{
-		return Iterator(*this, head);
-	}
-
-	Iterator end() const
+	void pushFront(DataType& value)
 	{
 		if (head == nullptr)
-			throw Exception("List is empty!");
-
-		return Iterator(*this, tail->next);
+		{
+			node_t* new_node = new node_t(value, nullptr, nullptr);
+			head = tail = new_node;
+		}
+		else
+		{
+			node_t* new_node = new node_t(value, head, nullptr);
+			head->prev = new_node;
+			head = new_node;
+		}
 	}
 
 	void pushFront(DataType&& value)
@@ -167,20 +199,25 @@ public:
 		size++;
 	}
 
-	void pushFront(DataType& value)
+	void popFront()
 	{
-		if (head == nullptr)
+		if (head == tail)
 		{
-			node_t* new_node = new node_t(value, nullptr, nullptr);
-			head = tail = new_node;
+			delete head;
+			tail = head = nullptr;
 		}
 		else
 		{
-			node_t* new_node = new node_t(value, head, nullptr);
-			head->prev = new_node;
-			head = new_node;
+			node_t* tmp = head;
+			head = head->next;
+			head->prev = nullptr;
+			delete tmp;
 		}
+		this->size--;
+
 	}
+
+
 
 	Iterator Insert(const Iterator& position, DataType&& value)
 	{
@@ -252,6 +289,48 @@ public:
 	{
 		DataType value(std::forward<Args>(args)...);
 		Insert(position, std::move(value));
+	}
+
+	void clear()
+	{
+		while (!empty())
+			popBack();
+	}
+
+	Iterator erase(const Iterator& position) const
+	{
+		if (this != position.lst)
+			throw Exception("Iterator does not belong to the list!");
+
+		node_t* tmp = head;
+
+		while (tmp != position.m_Ptr)
+		{
+			tmp = tmp->next;
+		}
+
+		if (tmp == head)
+		{
+			popFront();
+			return Iterator(*this, head);
+		}
+
+		if (tmp == tail)
+		{
+			popBack();
+			return Iterator(*this, tail);
+		}
+
+		node_t* buffer = tmp->next;
+		buffer->prev = tmp->prev;
+		buffer = buffer->prev;
+		buffer->next = tmp->next;
+
+		delete tmp;
+
+		size--;
+
+		return Iterator(*this, buffer->next);
 	}
 
 	void resize(const unsigned int& num)

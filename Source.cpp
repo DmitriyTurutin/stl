@@ -76,6 +76,7 @@ int main()
 		list2.pushBack(good1);
 		list2.Insert(list2.begin(), lst.begin(), lst.end());
 		std::cout << header;
+		list2.popFront();
 		for_each(list2.begin(), list2.end(), Print);
 
 
