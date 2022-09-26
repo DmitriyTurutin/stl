@@ -50,7 +50,7 @@ public:
 		}
 	}
 
-	explicit List(int size, const DataType initial_value = DataType())
+	explicit List(int size, DataType initial_value = DataType())
 	{
 		for (int i = 0; i < size; i++)
 			pushBack(initial_value);

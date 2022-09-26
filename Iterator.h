@@ -27,10 +27,8 @@ public:
 	}
 
 	ListIterator(const List<DataType>& lst, int n)
+		: lst(&lst), m_Ptr(lst.head)
 	{
-		m_Ptr = lst.head;
-		lst = &lst;
-
 		for (int i = 0; i < n; i++)
 		{
 			m_Ptr = m_Ptr->next;
@@ -80,7 +78,7 @@ public:
 
 	ListIterator& operator=(const ListIterator other) noexcept
 	{
-		lst = other.list;
+		lst = other.lst;
 		m_Ptr = other.m_Ptr;
 		return *this;
 	}

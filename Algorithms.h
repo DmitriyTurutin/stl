@@ -67,6 +67,7 @@ InputIt find_if(InputIt begin, InputIt end, UnaryPredicate pred)
 			return begin;
 		++begin;
 	}
+	return InputIt();
 	// FIXME: exception
 }
 
@@ -104,7 +105,8 @@ template<typename InputIt, typename UnaryFunction>
 requires IteratorConcept<InputIt> && LambdaConcept<InputIt, UnaryFunction>
 void Sort(InputIt begin, InputIt end, UnaryFunction func)
 {
-		std::iter_swap(begin, min_element(begin, end, func));
+	for (auto it = begin; it != end; ++it)
+		std::iter_swap(it, min_element(it, end, func));
 }
 
 template<typename InputIt, typename OutputIt, typename UnaryPredicate>
@@ -117,7 +119,7 @@ int copy_if(InputIt first, InputIt last, OutputIt d_first, UnaryPredicate pred)
 	{
 		if (pred(*first))
 		{
-			*d_first = first;
+			*d_first = *first;
 			++d_first;
 			++copied; 
 		}
